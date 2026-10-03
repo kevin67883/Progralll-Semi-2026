@@ -2,11 +2,13 @@
 <html lang="es">
 
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Períodos de balance</title>
     <style>
         :root {
+            color-scheme: light;
+            --field: #e9edf0;
             --bg: #f2f4f6;
             --card: #fff;
             --ink: #1b2733;
@@ -17,19 +19,6 @@
             --ok: #1f7a4d
         }
 
-        @media(prefers-color-scheme:dark) {
-            :root {
-                --bg: #141b21;
-                --card: #1c262e;
-                --ink: #e8eef2;
-                --mute: #9aa9b5;
-                --line: #2f3d48;
-                --acc: #5fc0d6;
-                --err: #ff8a80;
-                --ok: #6fd49b
-            }
-        }
-
         * {
             box-sizing: border-box
         }
@@ -38,132 +27,125 @@
             margin: 0;
             background: var(--bg);
             color: var(--ink);
-            font: 15px/1.5 "Segoe UI", system-ui, sans-serif
+            font: 15px system-ui, sans-serif
         }
 
         main {
-            max-width: 980px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 24px 16px 48px
-        }
-
-        h1 {
-            font-size: 1.5rem;
-            margin: 0 0 4px
-        }
-
-        p.sub {
-            margin: 0 0 20px;
-            color: var(--mute)
-        }
-
-        .grid {
+            padding: 16px;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px
+            gap: 16px;
+            grid-template-columns: 1fr 1fr
         }
 
-        @media(max-width:760px) {
-            .grid {
-                grid-template-columns: 1fr
-            }
+        nav {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 12px 16px
+        }
+
+        nav a {
+            color: var(--acc);
+            margin-right: 12px
         }
 
         section {
             background: var(--card);
             border: 1px solid var(--line);
             border-radius: 8px;
-            padding: 16px
+            padding: 16px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .04)
+        }
+
+        .ancho {
+            grid-column: 1/-1
         }
 
         h2 {
-            font-size: 1.05rem;
-            margin: 0 0 12px
+            margin: 0 0 12px;
+            font-size: 17px
         }
 
         label {
             display: block;
-            font-size: .85rem;
             color: var(--mute);
-            margin: 10px 0 3px
+            font-size: 13px;
+            margin-top: 10px
         }
 
         input,
         select {
             width: 100%;
-            padding: 8px;
+            padding: 9px;
             border: 1px solid var(--line);
             border-radius: 6px;
-            background: var(--bg);
+            background: var(--field);
             color: var(--ink);
             font: inherit
         }
 
-        input:focus-visible,
-        select:focus-visible,
-        button:focus-visible {
-            outline: 2px solid var(--acc);
-            outline-offset: 1px
-        }
-
-        .row {
+        .fila {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px
         }
 
         button {
-            padding: 9px 14px;
+            margin-top: 12px;
+            padding: 9px 16px;
             border: 0;
             border-radius: 6px;
             background: var(--acc);
             color: #fff;
             font: inherit;
             font-weight: 600;
+            cursor: pointer
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible {
+            outline: 2px solid var(--acc);
+            outline-offset: 2px
+        }
+
+        summary {
             cursor: pointer;
-            margin-top: 14px
-        }
-
-        @media(prefers-color-scheme:dark) {
-            button {
-                color: #0b1a20
-            }
-        }
-
-        button.sec {
-            background: none;
-            color: var(--err);
-            padding: 2px 6px;
-            margin: 0;
-            font-weight: 500
+            color: var(--acc);
+            margin-top: 10px
         }
 
         dl {
             margin: 0;
             display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 4px 14px
+            grid-template-columns: 1fr auto;
+            gap: 6px 12px
+        }
+
+        dd {
+            margin: 0;
+            text-align: right
         }
 
         dt {
             color: var(--mute)
         }
 
-        dd {
-            margin: 0;
-            text-align: right;
-            font-variant-numeric: tabular-nums
-        }
-
-        .big {
-            font-size: 1.9rem;
+        .precio {
+            font-size: 32px;
             font-weight: 700;
             color: var(--acc);
-            font-variant-numeric: tabular-nums;
-            margin: 8px 0 0
+            margin-top: 12px
         }
 
-        .msg {
+        .precio small {
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--mute)
+        }
+
+        #msg {
             margin-top: 10px;
             font-weight: 600
         }
@@ -176,95 +158,65 @@
             color: var(--ok)
         }
 
-        .vacio {
-            color: var(--mute)
-        }
-
-        summary {
-            cursor: pointer;
-            color: var(--acc);
-            margin-top: 10px;
-            font-weight: 600
-        }
-
         table {
             width: 100%;
-            border-collapse: collapse;
-            font-variant-numeric: tabular-nums
+            border-collapse: collapse
         }
 
         th,
         td {
-            padding: 8px 6px;
-            border-bottom: 1px solid var(--line);
-            text-align: left
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid var(--line)
         }
 
-        td.n,
-        th.n {
-            text-align: right
-        }
-
-        .scroll {
+        .tabla {
             overflow-x: auto
         }
 
-        .tot {
-            display: flex;
-            gap: 24px;
-            flex-wrap: wrap;
-            margin-top: 12px;
-            color: var(--mute)
-        }
-
-        .tot b {
-            color: var(--ink)
+        @media(max-width:800px) {
+            main {
+                grid-template-columns: 1fr
+            }
         }
     </style>
 </head>
 
 <body>
+    <nav><a href="/index.html">Clientes</a><a href="/periodos.html">Períodos</a></nav>
     <main>
-        <h1>Períodos de balance</h1>
-        <p class="sub">Registre el balance anual de una empresa y el sistema calcula el impuesto mensual.</p>
-
-        <div class="grid">
-            <section>
-                <h2>Nuevo período</h2>
-                <label for="cli">Empresa</label><select id="cli"></select>
-                <details id="nuevaEmp">
-                    <summary>Registrar una empresa</summary>
-                    <div class="row">
-                        <div><label for="ecod">Código</label><input id="ecod" placeholder="C002"></div>
-                        <div><label for="enom">Nombre</label><input id="enom" placeholder="Empresa S.A."></div>
-                    </div>
-                    <button id="egu" type="button">Guardar empresa</button>
-                </details>
-                <label for="pro">Producto</label>
-                <select id="pro">
-                    <option value="11802">11802 · Industria</option>
-                    <option value="11801">11801 · Comercio</option>
-                </select>
-                <div class="row">
-                    <div><label for="desde">Desde (incluido)</label><input type="date" id="desde"></div>
-                    <div><label for="hasta">Hasta (no incluido)</label><input type="date" id="hasta"></div>
+        <section>
+            <h2>Nuevo período</h2>
+            <label for="cboCliente">Empresa</label>
+            <select id="cboCliente"></select>
+            <details open>
+                <summary>Registrar una empresa</summary>
+                <div class="fila">
+                    <div><label for="txtCodigo">Código</label><input id="txtCodigo" placeholder="C002"></div>
+                    <div><label for="txtNombre">Nombre</label><input id="txtNombre" placeholder="Empresa S.A."></div>
                 </div>
-                <label for="bal">Balance o activo declarado ($)</label>
-                <input type="number" id="bal" min="0" step="0.01" placeholder="545.00">
-                <button id="guardar" type="button">Guardar período</button>
-                <div id="msg" class="msg" role="status"></div>
-            </section>
-
-            <section aria-live="polite">
-                <h2>Cálculo del impuesto</h2>
-                <div id="calc" class="vacio">Complete empresa, producto, fecha desde y balance para ver el cálculo.
-                </div>
-            </section>
-        </div>
-
-        <section style="margin-top:16px">
+                <button type="button" id="btnEmpresa">Guardar empresa</button>
+            </details>
+            <label for="cboProducto">Producto</label>
+            <select id="cboProducto"></select>
+            <div class="fila">
+                <div><label for="txtDesde">Desde (incluido)</label><input type="date" id="txtDesde"></div>
+                <div><label for="txtHasta">Hasta (no incluido)</label><input type="date" id="txtHasta"></div>
+            </div>
+            <label for="txtBalance">Balance o activo declarado ($)</label>
+            <input type="number" step="0.01" min="0.01" id="txtBalance">
+            <button type="button" id="btnGuardar">Guardar período</button>
+            <div id="msg" role="status"></div>
+        </section>
+        <section>
+            <h2>Cálculo del impuesto</h2>
+            <div id="calculo">
+                <p style="color:var(--mute)">Ingrese el balance para ver el cálculo.</p>
+            </div>
+        </section>
+        <section class="ancho">
             <h2>Períodos registrados</h2>
-            <div class="scroll">
+            <div class="tabla">
                 <table>
                     <thead>
                         <tr>
@@ -272,109 +224,94 @@
                             <th>Producto</th>
                             <th>Desde</th>
                             <th>Hasta</th>
-                            <th class="n">Balance</th>
-                            <th class="n">Mensual</th>
+                            <th>Balance</th>
+                            <th>Precio mensual</th>
+                            <th>Fórmula</th>
                             <th>Estado</th>
-                            <th></th>
                         </tr>
                     </thead>
-                    <tbody id="lista"></tbody>
+                    <tbody id="tblPeriodos"></tbody>
                 </table>
-            </div>
-            <div class="tot">
-                <span>Impuesto mensual vigente: <b id="vig">—</b></span>
-                <span>Total referencial de períodos: <b id="tot">—</b> (solo administrativo, no se cobra cada
-                    mes)</span>
             </div>
         </section>
     </main>
-
     <script>
         const $ = id => document.getElementById(id);
-        const post = (url, body) => fetch(url, { method: 'POST', body: JSON.stringify(body) }).then(r => r.json());
-        const money = v => '$' + Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+        const usd = v => '$' + Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        let temporizador;
 
-        async function cargarClientes() {
-            const cs = (await (await fetch('/clientes?buscar=')).json()).filter(c => c.tipo === 'empresa');
-            $('cli').innerHTML = cs.length
-                ? cs.map(c => `<option value="${c.idCliente}">${esc(c.codigo)} · ${esc(c.nombre)}</option>`).join('')
-                : '<option value="">No hay empresas registradas</option>';
-            if (!cs.length) $('nuevaEmp').open = true;
-            calcular();
+        function mensaje(texto, ok) { $('msg').textContent = texto; $('msg').className = ok ? 'ok' : 'err'; }
+
+        async function cargarEmpresas(seleccionar) {
+            const lista = (await (await fetch('/clientes?buscar=')).json()).filter(c => c.tipo === 'empresa');
+            $('cboCliente').replaceChildren();
+            lista.forEach(c => $('cboCliente').add(new Option(`${c.codigo} · ${c.nombre}`, c.idCliente)));
+            if (seleccionar) $('cboCliente').value = seleccionar;
         }
-
+        async function cargarProductos() {
+            const r = await fetch('/productos');
+            const lista = await r.json();
+            if (!Array.isArray(lista)) throw new Error(lista.msg || 'No se pudieron cargar los productos');
+            $('cboProducto').replaceChildren(new Option('Seleccione el producto...', ''));
+            lista.forEach(p => $('cboProducto').add(new Option(`${p.idProducto} · ${p.nombre.replace('Impuesto a las Actividades Económicas ', '')}`, p.idProducto)));
+        }
         async function cargarPeriodos() {
-            const ps = await (await fetch('/periodos?buscar=')).json();
-            const hoy = new Date().toISOString().slice(0, 10);
-            $('lista').innerHTML = ps.length ? ps.map(p => `<tr>
-    <td>${esc(p.nombreCliente)}</td><td>${esc(p.nombreProducto)}</td>
-    <td>${esc(p.desde)}</td><td>${esc(p.hasta)}</td>
-    <td class="n">${money(p.balance)}</td><td class="n">${money(p.precio)}</td>
-    <td>${esc(p.estado)}</td>
-    <td><button class="sec" type="button" onclick="eliminar(${p.idPeriodo})">Eliminar</button></td></tr>`).join('')
-                : '<tr><td colspan="8" class="vacio">Aún no hay períodos. Registre el primero con el formulario.</td></tr>';
-            const v = ps.find(p => p.desde <= hoy && hoy < p.hasta);
-            $('vig').textContent = v ? money(v.precio) : '—';
-            $('tot').textContent = ps.length ? money(ps.reduce((s, p) => s + Number(p.precio), 0)) : '—';
-        }
-
-        async function calcular() {
-            if (!$('cli').value || !$('desde').value || !$('bal').value) return;
-            const r = await post('/periodo/calcular', {
-                idCliente: $('cli').value, idProducto: $('pro').value,
-                balance: $('bal').value, desde: $('desde').value
+            const tbody = $('tblPeriodos'); tbody.replaceChildren();
+            const filas = await (await fetch('/periodos')).json();
+            filas.forEach(p => {
+                const tr = document.createElement('tr');
+                [p.nombreCliente, p.idProducto, p.desde, p.hasta, usd(p.balance), usd(p.precio), `${p.formula}: ${p.detalleCalculo}`, p.estado]
+                    .forEach(t => { const td = document.createElement('td'); td.textContent = t; tr.appendChild(td); });
+                tbody.appendChild(tr);
             });
-            if (r.msg !== 'ok') { $('calc').innerHTML = `<span class="err">${esc(r.msg)}</span>`; return; }
-            const t = r.tarifa;
-            $('calc').innerHTML = `<dl>
-    <dt>Balance</dt><dd>${money($('bal').value)}</dd>
-    <dt>Rango aplicado</dt><dd>${money(t.desde)} a ${money(t.hasta)}</dd>
-    <dt>Precio base</dt><dd>${money(t.precioBase)}</dd>
-    <dt>Adicional por bloque</dt><dd>${money(t.adicional)}</dd>
-    <dt>Porcentaje</dt><dd>${t.porcentaje}</dd>
-    <dt>Fórmula (${esc(r.formula)})</dt><dd>${esc(r.detalle)}</dd></dl>
-    <div class="big">${money(r.precio)} <small style="font-size:.9rem;font-weight:400">por mes</small></div>`;
         }
-
-        async function guardar() {
-            const r = await post('/periodo', {
-                accion: 'nuevo', idCliente: $('cli').value, idProducto: $('pro').value,
-                desde: $('desde').value, hasta: $('hasta').value, balance: $('bal').value
+        function vistaPrevia() {
+            clearTimeout(temporizador);
+            temporizador = setTimeout(async () => {
+                const box = $('calculo');
+                if (!$('txtBalance').value) { box.textContent = 'Ingrese el balance para ver el cálculo.'; return; }
+                const q = new URLSearchParams({ idProducto: $('cboProducto').value, balance: $('txtBalance').value, desde: $('txtDesde').value });
+                const r = await (await fetch('/calcular?' + q)).json();
+                box.replaceChildren();
+                if (r.msg !== 'ok') { const p = document.createElement('p'); p.className = 'err'; p.textContent = r.msg; box.appendChild(p); return; }
+                const d = r.detalle, dl = document.createElement('dl');
+                [['Balance', usd(d.balance)], ['Rango aplicado', d.rango.split(' a ').map(usd).join(' a ')], ['Precio base', usd(d.precioBase)],
+                ['Adicional por bloque', usd(d.adicional)], ['Porcentaje', Number(d.porcentaje)], [`Fórmula (${d.formula})`, d.detalleCalculo]]
+                    .forEach(([k, v]) => { const a = document.createElement('dt'), b = document.createElement('dd'); a.textContent = k; b.textContent = v; dl.append(a, b); });
+                const precio = document.createElement('div');
+                precio.className = 'precio'; precio.append(usd(d.precioMostrado) + ' ');
+                const por = document.createElement('small'); por.textContent = 'por mes'; precio.appendChild(por);
+                box.append(dl, precio);
+            }, 250);
+        }
+        async function enviar(url, datos) {
+            const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+            return (await r.json()).msg;
+        }
+        $('btnGuardar').addEventListener('click', async () => {
+            const msg = await enviar('/periodo', {
+                idCliente: $('cboCliente').value, idProducto: $('cboProducto').value,
+                desde: $('txtDesde').value, hasta: $('txtHasta').value, balance: $('txtBalance').value
             });
-            const ok = r.msg === 'ok';
-            $('msg').className = 'msg ' + (ok ? 'ok' : 'err');
-            $('msg').textContent = ok ? 'Período guardado.' : r.msg;
-            if (ok) { $('bal').value = ''; $('calc').innerHTML = 'Complete los datos para ver el cálculo.'; cargarPeriodos(); }
-        }
-
-        async function eliminar(id) {
-            if (!confirm('¿Eliminar este período?')) return;
-            const r = await post('/periodo', { accion: 'eliminar', idPeriodo: id });
-            $('msg').className = 'msg ' + (r.msg === 'ok' ? 'ok' : 'err');
-            $('msg').textContent = r.msg === 'ok' ? 'Período eliminado.' : r.msg;
-            cargarPeriodos();
-        }
-
-        $('desde').addEventListener('change', () => {
-            if ($('desde').value && !$('hasta').value)
-                $('hasta').value = (+$('desde').value.slice(0, 4) + 1) + $('desde').value.slice(4);
+            if (msg === 'ok') { mensaje('Período guardado.', true); cargarPeriodos(); } else mensaje(msg, false);
         });
-        ['cli', 'pro', 'desde', 'bal'].forEach(id => $(id).addEventListener('input', calcular));
-        async function guardarEmpresa() {
-            const codigo = $('ecod').value.trim(), nombre = $('enom').value.trim();
-            $('msg').className = 'msg err';
-            if (!codigo || !nombre) { $('msg').textContent = 'Escriba el código y el nombre de la empresa.'; return; }
-            const r = await post('/cliente', { accion: 'nuevo', codigo, nombre, direccion: '', telefono: '', email: '', tipo: 'empresa' });
-            const ok = r.msg === 'ok';
-            $('msg').className = 'msg ' + (ok ? 'ok' : 'err');
-            $('msg').textContent = ok ? 'Empresa registrada.' : r.msg;
-            if (ok) { $('ecod').value = ''; $('enom').value = ''; $('nuevaEmp').open = false; cargarClientes(); }
-        }
-        $('egu').addEventListener('click', guardarEmpresa);
-        $('guardar').addEventListener('click', guardar);
-        cargarClientes();
-        cargarPeriodos();
+        $('btnEmpresa').addEventListener('click', async () => {
+            const msg = await enviar('/cliente', {
+                accion: 'nuevo', codigo: $('txtCodigo').value, nombre: $('txtNombre').value,
+                direccion: '', telefono: '', email: '', tipo: 'empresa', idCliente: ''
+            });
+            if (msg !== 'ok') { mensaje(msg, false); return; }
+            mensaje('Empresa registrada.', true);
+            $('txtCodigo').value = $('txtNombre').value = '';
+            await cargarEmpresas();
+            $('cboCliente').selectedIndex = $('cboCliente').options.length - 1;
+        });
+        ['txtBalance', 'txtDesde'].forEach(id => $(id).addEventListener('input', vistaPrevia));
+        $('cboProducto').addEventListener('change', vistaPrevia);
+        (async () => {
+            try { await cargarEmpresas(); await cargarProductos(); await cargarPeriodos(); }
+            catch (e) { mensaje('No se pudo cargar la información: ' + e.message, false); }
+        })();
     </script>
 </body>
 

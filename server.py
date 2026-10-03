@@ -1,57 +1,59 @@
 from http.server import HTTPServer, SimpleHTTPRequestHandler
-from urllib import parse
 from urllib.parse import urlparse, parse_qs
+import json
 import crud_clientes
 import crud_periodos
-import json
 
 port = 3000
 crudClientes = crud_clientes.crud_clientes()
 crudPeriodos = crud_periodos.crud_periodos()
+PAGINAS = ('/index.html', '/periodos.html')
 
 
 class miServidor(SimpleHTTPRequestHandler):
 
-    def _json(self, obj):
-        self.send_response(200)
+    def _json(self, obj, codigo=200):
+        self.send_response(codigo)
         self.send_header("Content-type", "application/json")
         self.end_headers()
         self.wfile.write(json.dumps(obj, default=str).encode("utf-8"))
 
     def do_POST(self):
-        longitud = int(self.headers.get('Content-Length', 0))
-        datos = self.rfile.read(longitud).decode("utf-8")
-        datos = parse.unquote(datos)
-        datos = json.loads(datos)
-
-        if self.path == "/cliente":
-            respuesta = {'msg': crudClientes.administrar(datos)}
-        elif self.path == "/periodo":
-            respuesta = {'msg': crudPeriodos.administrar(datos)}
-        elif self.path == "/periodo/calcular":
-            respuesta = crudPeriodos.previsualizar(
-                datos["idCliente"], datos["idProducto"],
-                datos["balance"], datos["desde"])
-        else:
-            respuesta = {'msg': 'Ruta no encontrada'}
-
-        self._json(respuesta)
+        try:
+            longitud = int(self.headers.get('Content-Length', 0))
+            datos = json.loads(self.rfile.read(longitud).decode("utf-8"))
+            if self.path == "/cliente":
+                respuesta = {'msg': crudClientes.administrar(datos)}
+            elif self.path == "/periodo":
+                respuesta = {'msg': crudPeriodos.administrar(datos)}
+            else:
+                return self._json({'msg': 'Ruta no encontrada'}, 404)
+            self._json(respuesta)
+        except Exception as e:
+            self._json({'msg': f'Error: {e}'}, 500)
 
     def do_GET(self):
-        urlParse = urlparse(self.path)
-        qs = parse_qs(urlParse.query)
-        buscar = qs.get("buscar", [""])[0]
+        url = urlparse(self.path)
+        qs = {k: v[0] for k, v in parse_qs(url.query).items()}
+        try:
+            if url.path == "/clientes":
+                return self._json(crudClientes.consultar(qs.get('buscar', '')))
+            if url.path == "/productos":
+                return self._json(crudPeriodos.productos())
+            if url.path == "/periodos":
+                return self._json(crudPeriodos.consultar(qs.get('idCliente')))
+            if url.path == "/calcular":
+                return self._json(crudPeriodos.calcular(
+                    qs.get('idProducto'), qs.get('balance'), qs.get('desde')))
+            if url.path == "/":
+                self.path = "/index.html"
+                return SimpleHTTPRequestHandler.do_GET(self)
+            if url.path in PAGINAS:
+                return SimpleHTTPRequestHandler.do_GET(self)
+            self._json({'msg': 'Ruta no encontrada'}, 404)
+        except Exception as e:
+            self._json({'msg': f'Error: {e}'}, 500)
 
-        if urlParse.path == "/clientes":
-            self._json(crudClientes.consultar(buscar))
-        elif urlParse.path == "/periodos":
-            self._json(crudPeriodos.consultar(buscar))
-        elif urlParse.path == "/":
-            self.path = "/index.html"
-            return SimpleHTTPRequestHandler.do_GET(self)
-        else:
-            return SimpleHTTPRequestHandler.do_GET(self)
 
 print(f"Servidor corriendo en el puerto {port}")
-server = HTTPServer(("localhost", port), miServidor)
-server.serve_forever()
+HTTPServer(("localhost", port), miServidor).serve_forever()

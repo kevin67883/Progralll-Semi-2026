@@ -1,45 +1,59 @@
 import mysql.connector
 from mysql.connector import Error
+from contextlib import contextmanager
 
 
 class Conexion:
     def __init__(self):
-        self.host = "localhost"
-        self.user = "root"
-        self.password = ""
-        self.database = "db_sistema_impuestos"
+        self.config = dict(host="localhost", user="root", password="",
+                           database="db_sistema_impuestos", autocommit=True)
+        self.conexion = None
+        self._conectar()
 
     def _conectar(self):
-        return mysql.connector.connect(
-            host=self.host,
-            user=self.user,
-            password=self.password,
-            database=self.database,
-            autocommit=True
-        )
-
-    def consultar(self, sql, datos=None):
         try:
-            cnx = self._conectar()
-            cursor = cnx.cursor(dictionary=True)
-            cursor.execute(sql, datos or ())
-            resultado = cursor.fetchall()
-            cursor.close()
-            cnx.close()
-            return resultado
+            self.conexion = mysql.connector.connect(**self.config)
+            print("Conexion exitosa")
         except Error as e:
-            print(f"Error al consultar: {e}")
-            return []
+            print(f"Error al conectar a la base de datos: {e}")
+
+    def _asegurar(self):
+        try:
+            self.conexion.ping(reconnect=True, attempts=2, delay=1)
+        except Exception:
+            self._conectar()
+
+    def consultar(self, sql, params=None):
+        self._asegurar()
+        cursor = self.conexion.cursor(dictionary=True)
+        try:
+            cursor.execute(sql, params or ())
+            return cursor.fetchall()
+        finally:
+            cursor.close()
 
     def ejecutar(self, sql, datos):
         try:
-            cnx = self._conectar()
-            cursor = cnx.cursor()
+            self._asegurar()
+            cursor = self.conexion.cursor()
             cursor.execute(sql, datos)
-            cnx.commit()
             cursor.close()
-            cnx.close()
             return 'ok'
         except Error as e:
-            print(f"Error al ejecutar: {e}")
+            print(f"Error al ejecutar la consulta: {e}")
             return f'Error: {e}'
+
+    @contextmanager
+    def transaccion(self):
+        """Uso: with db.transaccion() as cur: cur.execute(...). Rollback si falla."""
+        self._asegurar()
+        self.conexion.start_transaction()
+        cur = self.conexion.cursor(dictionary=True)
+        try:
+            yield cur
+            self.conexion.commit()
+        except Exception:
+            self.conexion.rollback()
+            raise
+        finally:
+            cur.close() 
