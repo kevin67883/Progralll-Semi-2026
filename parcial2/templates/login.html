@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="/static/estilos.css">
+</head>
+<body>
+  <div class="caja">
+    <div class="logo-banda"><img src="/static/logo.png" alt="Universidad Gerardo Barrios"></div>
+    <h1>Iniciar sesión</h1>
+    <label for="usuario">Usuario</label>
+    <input type="text" id="usuario" autocomplete="username">
+    <label for="clave">Clave</label>
+    <input type="password" id="clave" autocomplete="current-password">
+    <button id="btnEntrar">Ingresar</button>
+    <div id="msg"></div>
+  </div>
+
+  <script>
+    async function entrar() {
+      const msg = document.getElementById('msg');
+      const r = await fetch('/validar_login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          usuario: document.getElementById('usuario').value,
+          clave: document.getElementById('clave').value
+        })
+      });
+      const res = await r.json();
+      if (res.ok) {
+        window.location.href = '/usuarios';
+      } else {
+        msg.className = 'error';
+        msg.textContent = res.msg;
+      }
+    }
+    document.getElementById('btnEntrar').addEventListener('click', entrar);
+    document.getElementById('clave').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+  </script>
+</body>
+</html>

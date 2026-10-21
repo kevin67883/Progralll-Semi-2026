@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Usuarios</title>
+  <link rel="stylesheet" href="/static/estilos.css">
+</head>
+<body>
+  <div class="ancho">
+    <div class="encabezado"><img src="/static/logo.png" alt="UGB"><span>Universidad Gerardo Barrios<br>Programación Computacional III - Parcial II</span></div>
+    <div class="barra">
+      <h1>Registro de usuarios</h1>
+      <span>Sesión: <b id="sesionUsuario"></b> | <a href="/logout">Cerrar sesión</a></span>
+    </div>
+
+    <div class="caja" style="max-width:none;margin:10px 0;">
+      <input type="hidden" id="idUsuario">
+      <div class="fila">
+        <div><label for="usuario">Usuario</label><input type="text" id="usuario" maxlength="35" autocomplete="off"></div>
+        <div><label for="clave">Clave</label><input type="password" id="clave" maxlength="35" autocomplete="new-password" placeholder="(vacía = no cambiar al editar)"></div>
+      </div>
+      <label for="nombre">Nombre</label>
+      <input type="text" id="nombre" maxlength="85" autocomplete="off">
+      <label for="direccion">Dirección</label>
+      <input type="text" id="direccion" maxlength="100" autocomplete="off">
+      <label for="telefono">Teléfono</label>
+      <input type="text" id="telefono" maxlength="9" placeholder="0000-0000" autocomplete="off">
+      <button id="btnGuardar">Guardar</button>
+      <button id="btnLimpiar" class="gris">Limpiar</button>
+      <div id="msg"></div>
+    </div>
+
+    <div class="caja" style="max-width:none;margin:10px 0;">
+      <h2>Buscar usuarios</h2>
+      <input type="text" id="buscar" placeholder="Buscar por usuario o nombre..." autocomplete="off">
+      <table>
+        <thead><tr><th>ID</th><th>Usuario</th><th>Nombre</th><th>Dirección</th><th>Teléfono</th><th>Acciones</th></tr></thead>
+        <tbody id="tabla"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="/static/usuarios.js"></script>
+</body>
+</html>
